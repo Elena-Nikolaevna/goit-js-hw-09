@@ -5,13 +5,13 @@ const refs = {
   body: document.body,
 };
 
-let interval = 0;
+let interval = null;
 
 refs.start.addEventListener('click', () => {
   console.log('start');
 
   randomColors(refs.body);
-
+  refs.start.disabled = true;
   interval = setInterval(() => {
     randomColors(refs.body);
   }, TIME_SHOW);
@@ -19,6 +19,7 @@ refs.start.addEventListener('click', () => {
 
 refs.stop.addEventListener('click', () => {
   console.log('stop');
+  refs.start.disabled = false;
   clearInterval(interval);
 });
 
