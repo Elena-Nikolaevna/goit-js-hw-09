@@ -37,8 +37,7 @@ function createPromise(position, delay) {
         resolve(`✅ Fulfill promise ${position} in ${delay}`);
       } else {
         reject(`❌Reject promise ${position} in ${delay}`);
-      }
-      //promiseCounter = 0;
+      }      
     }, delay);
   });
 }
