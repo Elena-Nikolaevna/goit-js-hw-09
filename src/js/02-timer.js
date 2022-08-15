@@ -10,8 +10,9 @@ const days = document.querySelector('span[data-days]');
 const hours = document.querySelector('span[data-hours]');
 const minutes = document.querySelector('span[data-minutes]');
 const seconds = document.querySelector('span[data-seconds]');
+const timerDiv = document.querySelector('.timer');
 
-button.classList.add('disabled');
+button.disabled = true;
 let userDate = null;
 
 const options = {
@@ -21,16 +22,26 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     console.log(selectedDates[0]);
-    if (selectedDates[0] < Date.now()) {
+    if (selectedDates[0] <= options.defaultDate) {
       Notiflix.Notify.failure('Please choose a date in the future');
-      userDate = new Date();
-    } else {
+      button.disabled = true;
+    }
+    if (selectedDates[0] >= options.defaultDate) {
       button.disabled = false;
-      button.classList.remove('disabled');
-      userDate = selectedDates[0];
+
     }
   },
 };
+
+button.addEventListener('click', onBtnClick);
+
+function onBtnClick() {
+  userDate = setInterval(() => {
+    updateTime();
+  }, 1000);
+  input.disabled = true;
+  button.disabled = true;
+}
 
 function convertMs(ms) {
   const second = 1000;
@@ -49,34 +60,19 @@ function pad(value) {
   return String(value).padStart(2, 0);
 }
 
-class Timer {
-  constructor() {
-    this.isActive = false;
-    this.timer = null;
-    button.disabled = true;
-  }
-  timerStart() {
-    if (this.isActive) {
-      return;
-    }
-    this.isActive = true;
-    this.timer = setInterval(() => {
-      const currentTime = Date.now();
-      const deltaTime = userDate - currentTime;
-      const timeComponents = convertMs(deltaTime);
-      seconds.textContent = timeComponents.seconds;
-      minutes.textContent = timeComponents.minutes;
-      hours.textContent = timeComponents.hours;
-      days.textContent = timeComponents.days;
-      if (deltaTime <= 0) {
-        this.stop();
-      }
-    }, 1000);
-  }
-  timerStop() {
-    clearInterval(this.timer);
+function updateTime() {
+  const currentTime = new Date();
+  const selectedTime = new Date(input.value);
+  const deltaTime = selectedTime - currentTime;
+  if (deltaTime < 0) {
+    timerDiv.innerHTML = 'Time over!';
+    return;
+  } else {
+    const timeComponents = convertMs(deltaTime);
+    seconds.textContent = timeComponents.seconds;
+    minutes.textContent = timeComponents.minutes;
+    hours.textContent = timeComponents.hours;
+    days.textContent = timeComponents.days;
   }
 }
-const timer = new Timer();
 flatpickr(input, options);
-button.addEventListener('click', () => timer.timerStart());
